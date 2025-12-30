@@ -913,7 +913,7 @@ Authorization: Bearer <jwt_token>
 ## SUPPORT INFORMATION
 
 **Development Team Contact:**
-- **Email:** dev-team@nexo.com
+- **Email:** parnetstech14@gmail.com
 - **Documentation:** Internal Wiki
 - **Last Updated:** December 30, 2024
 - **API Version:** 1.0
