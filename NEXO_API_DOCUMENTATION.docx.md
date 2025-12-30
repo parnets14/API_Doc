@@ -7,7 +7,7 @@
 - **Project:** Nexo Service Platform
 - **Version:** 1.0
 - **Date:** December 30, 2024
-- **Base URL:** `http://localhost:9088/api`
+- **Base URL:** `https://nexo.works/api`
 
 ---
 
@@ -318,34 +318,9 @@ Authorization: Bearer <jwt_token>
 **Endpoint:** `GET /user/service-booking/payment-status/{txnid}`
 **Authentication:** Required
 
-### 🚗 Travel Bookings
 
-#### 24. Create Travel Booking
-**Endpoint:** `POST /user/booktravel`
-**Authentication:** Required
 
-**Request Body:**
-```json
-{
-  "from": "Mumbai",
-  "to": "Pune",
-  "date": "2024-01-15",
-  "time": "09:00 AM",
-  "passengers": 2,
-  "vehicleType": "sedan",
-  "notes": "Airport pickup required"
-}
-```
-
-#### 25. Create Driver Booking
-**Endpoint:** `POST /user/bookdriver`
-**Authentication:** Required
-
-#### 26. Get Travel Bookings
-**Endpoint:** `GET /user/travelbookings`
-**Authentication:** Required
-
-#### 27. Cancel Travel Booking
+#### 27. Cancel  Booking
 **Endpoint:** `PUT /user/travelbookings/{bookingId}/cancel`
 **Authentication:** Required
 
