@@ -1,8 +1,8 @@
-# AiSensy Integration API Documentation
+# AiSensy Complete Integration API Documentation
 
 ## 📋 Overview
 
-The AiSensy Integration API enables seamless booking creation through chatbot interactions without requiring authentication. This API is specifically designed for AiSensy chatbots to create and manage service bookings on behalf of customers and partners.
+The AiSensy Complete Integration API provides comprehensive booking management capabilities for both customers and partners through chatbot interactions. This API supports the entire booking lifecycle from creation to completion, including reviews and quotations.
 
 ### 🔗 Base URL
 ```
@@ -10,20 +10,21 @@ https://nexo.works/api/aisensy
 ```
 
 ### 🔑 Authentication
-**No authentication required** - All endpoints are public and can be called directly by AiSensy chatbots.
+**No authentication required** - All endpoints are public and designed for AiSensy chatbot integration.
 
 ---
 
-## 🚀 API Endpoints
+## 🚀 Complete API Endpoints
 
-### 1. Get Available Services
-**Get all available popular services and their add-ons**
+### 📋 **Basic Operations**
 
+#### 1. Get Available Services
 ```http
 GET /api/aisensy/services
 ```
+**Description:** Retrieve all available popular services and their add-ons.
 
-#### Response
+**Response:**
 ```json
 {
   "success": true,
@@ -31,39 +32,16 @@ GET /api/aisensy/services
     {
       "serviceId": "60f7b3b3b3b3b3b3b3b3b3b3",
       "serviceName": "AC Repair & Maintenance",
-      "description": "Professional air conditioning repair and maintenance services",
+      "description": "Professional air conditioning services",
       "basePrice": 500,
       "price": "Starting from ₹500",
       "addOns": [
         {
           "addOnId": "60f7b3b3b3b3b3b3b3b3b3b4",
           "addOnName": "AC Installation",
-          "description": "Complete AC installation with warranty",
+          "description": "Complete AC installation service",
           "basePrice": 2500,
           "price": "₹2500"
-        },
-        {
-          "addOnId": "60f7b3b3b3b3b3b3b3b3b3b5",
-          "addOnName": "AC Deep Cleaning",
-          "description": "Thorough cleaning of AC unit",
-          "basePrice": 800,
-          "price": "₹800"
-        }
-      ]
-    },
-    {
-      "serviceId": "60f7b3b3b3b3b3b3b3b3b3b6",
-      "serviceName": "Plumbing Services",
-      "description": "Complete plumbing solutions for homes and offices",
-      "basePrice": 300,
-      "price": "Starting from ₹300",
-      "addOns": [
-        {
-          "addOnId": "60f7b3b3b3b3b3b3b3b3b3b7",
-          "addOnName": "Pipe Installation",
-          "description": "New pipe installation and replacement",
-          "basePrice": 1200,
-          "price": "₹1200"
         }
       ]
     }
@@ -71,16 +49,45 @@ GET /api/aisensy/services
 }
 ```
 
+#### 2. Get Booking Status
+```http
+GET /api/aisensy/booking/{bookingId}/status
+```
+**Description:** Get current booking status and details.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+    "status": "accepted",
+    "paymentStatus": "pending",
+    "customerName": "John Doe",
+    "customerPhone": "+919876543210",
+    "serviceName": "AC Repair & Maintenance",
+    "scheduledDate": "2024-02-15T00:00:00.000Z",
+    "scheduledTime": "14:30",
+    "amount": 500,
+    "partnerName": "Rajesh Kumar",
+    "partnerPhone": "+919876543211",
+    "otp": "123456",
+    "acceptedAt": "2024-01-15T11:00:00.000Z"
+  }
+}
+```
+
 ---
 
-### 2. Create Customer Booking
-**Create a booking for a customer via AiSensy**
+### 👤 **Customer Operations**
 
+#### 3. Create Customer Booking
 ```http
 POST /api/aisensy/customer/create-booking
 ```
+**Description:** Create a new booking for a customer.
 
-#### Request Body
+**Request Body:**
 ```json
 {
   "customerPhone": "+919876543210",
@@ -97,344 +104,415 @@ POST /api/aisensy/customer/create-booking
   },
   "amount": 500,
   "paymentMode": "cash",
-  "specialInstructions": "Please call 30 minutes before arrival",
-  "lat": "12.9352",
-  "lng": "77.6245"
+  "specialInstructions": "Please call before arrival"
 }
 ```
 
-#### Required Fields
-| Field | Type | Description |
-|-------|------|-------------|
-| `customerPhone` | string | Customer phone number (international format) |
-| `customerName` | string | Customer full name |
-| `serviceName` | string | Name of the service (must match existing service) |
-| `scheduledDate` | string | Booking date (YYYY-MM-DD format) |
-| `scheduledTime` | string | Booking time (HH:mm format, 24-hour) |
-| `location.address` | string | Complete address |
-| `amount` | number | Service amount in rupees |
+#### 4. Cancel Customer Booking
+```http
+PUT /api/aisensy/customer/cancel-booking
+```
+**Description:** Cancel a booking (within 2 hours of creation).
 
-#### Optional Fields
-| Field | Type | Description |
-|-------|------|-------------|
-| `customerEmail` | string | Customer email address |
-| `serviceId` | string | Specific service ID (if known) |
-| `location.landmark` | string | Nearby landmark |
-| `location.pincode` | string | Area pincode |
-| `paymentMode` | string | Payment method (default: "cash") |
-| `specialInstructions` | string | Special instructions for service provider |
-| `lat` | string | Latitude coordinates |
-| `lng` | string | Longitude coordinates |
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "customerPhone": "+919876543210",
+  "cancellationReason": "Change of plans"
+}
+```
 
-#### Response
+**Response:**
 ```json
 {
   "success": true,
-  "message": "Booking created successfully",
+  "message": "Booking cancelled successfully",
   "data": {
     "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
-    "customerId": "60f7b3b3b3b3b3b3b3b3b3b9",
-    "customerName": "John Doe",
-    "customerPhone": "+919876543210",
-    "serviceName": "AC Repair & Maintenance",
-    "status": "pending",
-    "paymentStatus": "pending",
-    "scheduledDate": "2024-02-15",
-    "scheduledTime": "14:30",
-    "amount": 500,
-    "location": {
-      "address": "123 Main Street, Koramangala, Bangalore",
-      "landmark": "Near Forum Mall",
-      "pincode": "560034"
-    },
-    "createdAt": "2024-01-15T10:30:00.000Z"
+    "status": "cancelled",
+    "cancellationReason": "Change of plans",
+    "cancellationTime": "2024-01-15T12:00:00.000Z"
   }
+}
+```
+
+#### 5. Submit Customer Review
+```http
+POST /api/aisensy/customer/submit-review
+```
+**Description:** Submit a review for a completed booking.
+
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "customerPhone": "+919876543210",
+  "rating": 5,
+  "comment": "Excellent service! Very professional and timely."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Review submitted successfully! It will be published after moderation.",
+  "data": {
+    "reviewId": "60f7b3b3b3b3b3b3b3b3b3b9",
+    "rating": 5,
+    "comment": "Excellent service! Very professional and timely.",
+    "status": "pending",
+    "submittedAt": "2024-01-15T15:00:00.000Z"
+  }
+}
+```
+
+#### 6. Customer Quotation Action
+```http
+PUT /api/aisensy/customer/quotation-action
+```
+**Description:** Accept or reject a quotation from partner.
+
+**Request Body (Accept):**
+```json
+{
+  "quotationId": "60f7b3b3b3b3b3b3b3b3b3ba",
+  "customerPhone": "+919876543210",
+  "action": "accept"
+}
+```
+
+**Request Body (Reject):**
+```json
+{
+  "quotationId": "60f7b3b3b3b3b3b3b3b3b3ba",
+  "customerPhone": "+919876543210",
+  "action": "reject",
+  "rejectionReason": "Price too high"
 }
 ```
 
 ---
 
-### 3. Create Partner Booking
-**Create a booking and assign it directly to a partner**
+### 👷 **Partner Operations**
 
+#### 7. Create Partner Booking
 ```http
 POST /api/aisensy/partner/create-booking
 ```
+**Description:** Create a booking and assign directly to a partner.
 
-#### Request Body
+**Request Body:**
 ```json
 {
   "partnerPhone": "+919876543211",
   "customerPhone": "+919876543212",
   "customerName": "Jane Smith",
-  "customerEmail": "jane@example.com",
   "serviceName": "Plumbing Services",
-  "serviceId": "60f7b3b3b3b3b3b3b3b3b3b6",
   "scheduledDate": "2024-02-16",
   "scheduledTime": "10:00",
   "location": {
-    "address": "456 Oak Street, Indiranagar, Bangalore",
-    "landmark": "Near Metro Station",
-    "pincode": "560038"
+    "address": "456 Oak Street, Indiranagar, Bangalore"
   },
-  "amount": 750,
-  "paymentMode": "online",
-  "specialInstructions": "Emergency repair - please prioritize",
-  "lat": "12.9719",
-  "lng": "77.6412"
+  "amount": 750
 }
 ```
 
-#### Additional Required Fields
-| Field | Type | Description |
-|-------|------|-------------|
-| `partnerPhone` | string | Partner phone number (must be registered and approved) |
-
-#### Response
-```json
-{
-  "success": true,
-  "message": "Booking created and assigned to partner successfully",
-  "data": {
-    "bookingId": "60f7b3b3b3b3b3b3b3b3b3ba",
-    "customerId": "60f7b3b3b3b3b3b3b3b3b3bb",
-    "customerName": "Jane Smith",
-    "customerPhone": "+919876543212",
-    "partnerId": "60f7b3b3b3b3b3b3b3b3b3bc",
-    "partnerName": "Rajesh Kumar",
-    "partnerPhone": "+919876543211",
-    "serviceName": "Plumbing Services",
-    "status": "accepted",
-    "paymentStatus": "pending",
-    "scheduledDate": "2024-02-16",
-    "scheduledTime": "10:00",
-    "amount": 750,
-    "location": {
-      "address": "456 Oak Street, Indiranagar, Bangalore",
-      "landmark": "Near Metro Station",
-      "pincode": "560038"
-    },
-    "otp": "123456",
-    "createdAt": "2024-01-15T10:30:00.000Z",
-    "acceptedAt": "2024-01-15T10:30:00.000Z"
-  }
-}
-```
-
----
-
-### 4. Get Booking Status
-**Retrieve current booking status and details**
-
+#### 8. Partner Accept Booking
 ```http
-GET /api/aisensy/booking/{bookingId}/status
+PUT /api/aisensy/partner/accept-booking
+```
+**Description:** Accept a pending booking.
+
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "partnerPhone": "+919876543211"
+}
 ```
 
-#### Path Parameters
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `bookingId` | string | Unique booking identifier |
-
-#### Response
+**Response:**
 ```json
 {
   "success": true,
+  "message": "Booking accepted successfully",
   "data": {
     "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+    "partnerId": "60f7b3b3b3b3b3b3b3b3b3bc",
+    "partnerName": "Rajesh Kumar",
     "status": "accepted",
-    "paymentStatus": "pending",
+    "acceptedAt": "2024-01-15T11:00:00.000Z",
+    "otp": "123456",
     "customerName": "John Doe",
     "customerPhone": "+919876543210",
-    "serviceName": "AC Repair & Maintenance",
-    "scheduledDate": "2024-02-15T00:00:00.000Z",
-    "scheduledTime": "14:30",
-    "amount": 500,
-    "location": {
-      "address": "123 Main Street, Koramangala, Bangalore",
-      "landmark": "Near Forum Mall",
-      "pincode": "560034"
-    },
+    "serviceName": "AC Repair & Maintenance"
+  }
+}
+```
+
+#### 9. Partner Reject Booking
+```http
+PUT /api/aisensy/partner/reject-booking
+```
+**Description:** Reject a booking assignment.
+
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "partnerPhone": "+919876543211",
+  "rejectionReason": "Not available at scheduled time"
+}
+```
+
+#### 10. Partner Complete Booking
+```http
+PUT /api/aisensy/partner/complete-booking
+```
+**Description:** Complete a booking using customer OTP.
+
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "partnerPhone": "+919876543211",
+  "otp": "123456",
+  "remark": "Service completed successfully"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Booking completed successfully",
+  "data": {
+    "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+    "partnerId": "60f7b3b3b3b3b3b3b3b3b3bc",
     "partnerName": "Rajesh Kumar",
-    "partnerPhone": "+919876543211",
-    "otp": "123456",
-    "acceptedAt": "2024-01-15T11:00:00.000Z",
-    "createdAt": "2024-01-15T10:30:00.000Z",
-    "updatedAt": "2024-01-15T11:00:00.000Z"
+    "status": "completed",
+    "completedAt": "2024-01-15T16:00:00.000Z",
+    "remark": "Service completed successfully",
+    "customerName": "John Doe",
+    "serviceName": "AC Repair & Maintenance"
+  }
+}
+```
+
+#### 11. Partner Create Quotation
+```http
+POST /api/aisensy/partner/create-quotation
+```
+**Description:** Create a detailed quotation for additional work.
+
+**Request Body:**
+```json
+{
+  "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+  "partnerPhone": "+919876543211",
+  "items": [
+    {
+      "description": "AC Repair Service",
+      "quantity": 1,
+      "unitPrice": 500,
+      "totalPrice": 500
+    },
+    {
+      "description": "Replacement Parts",
+      "quantity": 2,
+      "unitPrice": 150,
+      "totalPrice": 300
+    }
+  ],
+  "totalAmount": 800,
+  "notes": "Includes parts and labor. 6 months warranty."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Quotation created successfully",
+  "data": {
+    "quotationId": "60f7b3b3b3b3b3b3b3b3b3ba",
+    "bookingId": "60f7b3b3b3b3b3b3b3b3b3b8",
+    "partnerId": "60f7b3b3b3b3b3b3b3b3b3bc",
+    "partnerName": "Rajesh Kumar",
+    "items": [...],
+    "totalAmount": 800,
+    "notes": "Includes parts and labor. 6 months warranty.",
+    "customerStatus": "pending",
+    "adminStatus": "pending",
+    "createdAt": "2024-01-15T13:00:00.000Z"
   }
 }
 ```
 
 ---
 
-## 📊 Status Values
+## 🔄 Complete Booking Lifecycle
 
-### Booking Status
-| Status | Description |
-|--------|-------------|
-| `pending` | Booking created, waiting for partner acceptance |
-| `accepted` | Partner has accepted the booking |
-| `confirmed` | Booking confirmed by admin |
-| `in_progress` | Service is currently being performed |
-| `completed` | Service completed successfully |
-| `cancelled` | Booking cancelled |
-| `rejected` | Booking rejected by partner |
+### Customer Journey
+1. **Discovery** → `GET /services` - Browse available services
+2. **Booking** → `POST /customer/create-booking` - Create booking
+3. **Monitoring** → `GET /booking/{id}/status` - Track status
+4. **Quotation** → `PUT /customer/quotation-action` - Accept/reject quotes
+5. **Cancellation** → `PUT /customer/cancel-booking` - Cancel if needed
+6. **Review** → `POST /customer/submit-review` - Rate service
+
+### Partner Journey
+1. **Assignment** → `PUT /partner/accept-booking` - Accept bookings
+2. **Quotation** → `POST /partner/create-quotation` - Send quotes
+3. **Service** → `PUT /partner/complete-booking` - Complete work
+4. **Alternative** → `PUT /partner/reject-booking` - Decline if unavailable
+
+---
+
+## 📊 Status Values & Workflow
+
+### Booking Status Flow
+```
+pending → accepted → in_progress → completed
+    ↓         ↓
+cancelled   rejected
+```
+
+| Status | Description | Available Actions |
+|--------|-------------|-------------------|
+| `pending` | Awaiting partner acceptance | Accept, Reject, Cancel |
+| `accepted` | Partner assigned, OTP generated | Complete, Create Quotation |
+| `in_progress` | Service in progress | Complete |
+| `completed` | Service finished | Submit Review |
+| `cancelled` | Booking cancelled | None |
+| `rejected` | Partner rejected | Reassign |
 
 ### Payment Status
 | Status | Description |
 |--------|-------------|
-| `pending` | Payment not yet made |
-| `completed` | Payment completed successfully |
+| `pending` | Payment not made |
+| `completed` | Payment successful |
 | `failed` | Payment failed |
 | `refunded` | Payment refunded |
-
----
-
-## ⚠️ Error Responses
-
-All endpoints return consistent error responses:
-
-```json
-{
-  "success": false,
-  "message": "Error description",
-  "error": "Detailed error message (development mode only)"
-}
-```
-
-### Common HTTP Status Codes
-| Code | Description |
-|------|-------------|
-| `400` | Bad Request - Validation errors |
-| `404` | Not Found - Resource not found |
-| `500` | Internal Server Error |
-
-### Common Error Scenarios
-
-#### 400 Bad Request Examples
-```json
-{
-  "success": false,
-  "message": "Missing required fields: customerPhone, customerName, serviceName, scheduledDate, scheduledTime, location.address, amount are required",
-  "received": {
-    "customerPhone": true,
-    "customerName": false,
-    "serviceName": true,
-    "scheduledDate": true,
-    "scheduledTime": true,
-    "locationAddress": false,
-    "amount": true
-  }
-}
-```
-
-```json
-{
-  "success": false,
-  "message": "Service 'Invalid Service' not found. Please provide a valid serviceName or serviceId",
-  "suggestion": "Use GET /api/aisensy/services to get available services"
-}
-```
-
-```json
-{
-  "success": false,
-  "message": "Partner with phone number +919876543211 not found. Partner must be registered first."
-}
-```
 
 ---
 
 ## 🔧 Validation Rules
 
 ### Phone Numbers
-- Must be in international format (e.g., `+919876543210`)
-- Must contain 10-15 digits after country code
-- No spaces or special characters except `+`
+- Format: International (`+919876543210`)
+- Length: 10-15 digits after country code
+- Required for customer/partner verification
 
-### Dates and Times
-- **Date format**: `YYYY-MM-DD`
-- **Time format**: `HH:mm` (24-hour format)
-- Date must be today or in the future
-- Time must be valid (00:00 to 23:59)
+### Dates & Times
+- Date: `YYYY-MM-DD` format
+- Time: `HH:mm` (24-hour format)
+- Must be today or future date
 
-### Service Names
-- Must match existing popular service names (case-insensitive)
-- Use the services API to get available service names
+### Reviews
+- Rating: 1-5 (integer)
+- Comment: Minimum 10 characters
+- Only for completed bookings
 
-### Partner Requirements
-- Partner must be registered in the system
-- Partner KYC status must be "approved"
-- Partner must be active and available
+### Quotations
+- Items: Non-empty array
+- Each item: description, quantity, unitPrice, totalPrice
+- Total amount must match sum of item totals
+
+### Cancellation Policy
+- Allowed within 2 hours of booking creation
+- Only for pending/confirmed bookings
+- Requires cancellation reason
 
 ---
 
 ## 💡 Integration Examples
 
-### Example 1: Customer Booking Flow
-
+### Complete Customer Flow
 ```javascript
-// Step 1: Get available services
-const servicesResponse = await fetch('https://your-domain.com/api/aisensy/services');
-const services = await servicesResponse.json();
+// 1. Browse services
+const services = await fetch('/api/aisensy/services');
 
-// Step 2: Create customer booking
-const bookingData = {
-  customerPhone: "+919876543210",
-  customerName: "John Doe",
-  serviceName: "AC Repair & Maintenance",
-  scheduledDate: "2024-02-15",
-  scheduledTime: "14:30",
-  location: {
-    address: "123 Main Street, Koramangala, Bangalore"
-  },
-  amount: 500
-};
-
-const bookingResponse = await fetch('https://your-domain.com/api/aisensy/customer/create-booking', {
+// 2. Create booking
+const booking = await fetch('/api/aisensy/customer/create-booking', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(bookingData)
+  body: JSON.stringify({
+    customerPhone: "+919876543210",
+    customerName: "John Doe",
+    serviceName: "AC Repair",
+    scheduledDate: "2024-02-15",
+    scheduledTime: "14:30",
+    location: { address: "123 Main Street" },
+    amount: 500
+  })
 });
 
-const booking = await bookingResponse.json();
-console.log('Booking ID:', booking.data.bookingId);
+// 3. Monitor status
+const status = await fetch(`/api/aisensy/booking/${bookingId}/status`);
 
-// Step 3: Check booking status
-const statusResponse = await fetch(`https://your-domain.com/api/aisensy/booking/${booking.data.bookingId}/status`);
-const status = await statusResponse.json();
-console.log('Booking Status:', status.data.status);
+// 4. Handle quotation (if received)
+await fetch('/api/aisensy/customer/quotation-action', {
+  method: 'PUT',
+  body: JSON.stringify({
+    quotationId: "...",
+    customerPhone: "+919876543210",
+    action: "accept"
+  })
+});
+
+// 5. Submit review (after completion)
+await fetch('/api/aisensy/customer/submit-review', {
+  method: 'POST',
+  body: JSON.stringify({
+    bookingId: "...",
+    customerPhone: "+919876543210",
+    rating: 5,
+    comment: "Excellent service!"
+  })
+});
 ```
 
-### Example 2: Partner Booking Flow
-
+### Complete Partner Flow
 ```javascript
-// Create partner booking (direct assignment)
-const partnerBookingData = {
-  partnerPhone: "+919876543211",
-  customerPhone: "+919876543212",
-  customerName: "Jane Smith",
-  serviceName: "Plumbing Services",
-  scheduledDate: "2024-02-16",
-  scheduledTime: "10:00",
-  location: {
-    address: "456 Oak Street, Indiranagar, Bangalore"
-  },
-  amount: 750
-};
-
-const partnerBookingResponse = await fetch('https://your-domain.com/api/aisensy/partner/create-booking', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(partnerBookingData)
+// 1. Accept booking
+const acceptance = await fetch('/api/aisensy/partner/accept-booking', {
+  method: 'PUT',
+  body: JSON.stringify({
+    bookingId: "...",
+    partnerPhone: "+919876543211"
+  })
 });
 
-const partnerBooking = await partnerBookingResponse.json();
-console.log('Booking ID:', partnerBooking.data.bookingId);
-console.log('OTP:', partnerBooking.data.otp);
+// 2. Create quotation (if additional work needed)
+await fetch('/api/aisensy/partner/create-quotation', {
+  method: 'POST',
+  body: JSON.stringify({
+    bookingId: "...",
+    partnerPhone: "+919876543211",
+    items: [
+      {
+        description: "Additional repair",
+        quantity: 1,
+        unitPrice: 300,
+        totalPrice: 300
+      }
+    ],
+    totalAmount: 300
+  })
+});
+
+// 3. Complete booking
+await fetch('/api/aisensy/partner/complete-booking', {
+  method: 'PUT',
+  body: JSON.stringify({
+    bookingId: "...",
+    partnerPhone: "+919876543211",
+    otp: "123456",
+    remark: "Service completed successfully"
+  })
+});
 ```
 
 ---
@@ -444,124 +522,172 @@ console.log('OTP:', partnerBooking.data.otp);
 ### Automated Testing
 ```bash
 cd backend
-node test-aisensy-api.js
+node test-aisensy-extended.js
 ```
 
-### Manual Testing with Postman
-1. Import the collection: `backend/AiSensy_API_Collection.postman_collection.json`
-2. Set the `baseUrl` variable to your server URL
-3. Run the requests in order
+### Test Coverage
+- ✅ Service discovery
+- ✅ Customer booking creation
+- ✅ Partner booking creation
+- ✅ Booking status tracking
+- ✅ Customer cancellation
+- ✅ Partner acceptance/rejection
+- ✅ Booking completion with OTP
+- ✅ Review submission
+- ✅ Quotation creation
+- ✅ Quotation acceptance/rejection
 
-### Prerequisites for Testing
-- Server running and accessible
-- Database with popular services configured
-- For partner booking tests: approved partner with test phone number
+---
+
+## ⚠️ Error Handling
+
+### Common Error Scenarios
+
+#### Booking Not Found (404)
+```json
+{
+  "success": false,
+  "message": "Booking not found"
+}
+```
+
+#### Phone Verification Failed (400)
+```json
+{
+  "success": false,
+  "message": "Customer phone number does not match booking"
+}
+```
+
+#### Invalid OTP (400)
+```json
+{
+  "success": false,
+  "message": "Invalid OTP"
+}
+```
+
+#### Cancellation Policy Violation (400)
+```json
+{
+  "success": false,
+  "message": "Cancellation is only allowed within 2 hours of booking creation"
+}
+```
+
+#### Partner Not Approved (400)
+```json
+{
+  "success": false,
+  "message": "Partner is not approved. KYC status: pending"
+}
+```
 
 ---
 
 ## 🔔 Notifications
 
-The system automatically sends notifications when bookings are created:
+The system automatically sends notifications for:
 
-### Customer Bookings
-- **Partner Notifications**: Sent to all approved partners
-- **FCM Push Notifications**: If partner has FCM token
-- **In-App Notifications**: Stored in database
+### Customer Notifications
+- Booking confirmation
+- Partner assignment
+- Booking completion
+- Quotation received
 
-### Partner Bookings
-- **Customer Notifications**: Booking confirmation with partner details
-- **Partner Notifications**: Booking assignment confirmation
-- **OTP Generation**: Automatic OTP for service completion
+### Partner Notifications
+- New booking alerts
+- Booking assignment
+- Customer quotation response
+- Booking completion confirmation
+
+### Admin Notifications
+- New bookings
+- Cancellations
+- Quotation requests
+- Review submissions
 
 ---
 
-## 🔒 Security Considerations
+## 📈 Analytics & Monitoring
+
+### Key Metrics to Track
+- Booking creation rate
+- Partner acceptance rate
+- Completion rate
+- Review submission rate
+- Quotation acceptance rate
+- Cancellation rate
+
+### Performance Monitoring
+- API response times
+- Error rates by endpoint
+- Peak usage times
+- Geographic distribution
+
+---
+
+## 🔒 Security Features
 
 ### Input Validation
-- All inputs are validated server-side
 - Phone number format validation
-- Date/time format validation
+- Date/time validation
 - Required field validation
-- Service name sanitization
+- Data sanitization
+
+### Business Logic Protection
+- 2-hour cancellation policy
+- OTP verification for completion
+- Partner-booking assignment verification
+- Review submission restrictions
 
 ### Rate Limiting (Recommended)
-- Implement rate limiting for production use
-- Monitor API usage for abuse detection
-- Consider IP-based rate limiting
-
-### Data Privacy
-- Minimal data collection
-- Automatic email generation for users without email
-- Phone number as primary identifier
-- GDPR compliance considerations
+- Per-phone number limits
+- Per-IP address limits
+- Endpoint-specific limits
 
 ---
 
-## 📈 Monitoring and Analytics
+## 🆘 Support & Troubleshooting
 
-### Recommended Metrics
-- API response times
-- Success/failure rates
-- Booking creation rates
-- Partner assignment rates
-- Notification delivery rates
+### Integration Checklist
+- [ ] Server running and accessible
+- [ ] Popular services configured in database
+- [ ] Partners registered and approved
+- [ ] FCM tokens configured for notifications
+- [ ] Test phone numbers available
 
-### Logging
-- Comprehensive request/response logging
-- Error tracking with context
-- Performance monitoring
-- User behavior analytics
+### Common Integration Issues
+1. **Service Not Found** - Ensure service names match exactly
+2. **Partner Not Found** - Verify partner registration and approval
+3. **OTP Issues** - Check booking status and OTP generation
+4. **Cancellation Failures** - Verify 2-hour policy compliance
 
----
-
-## 🆘 Support and Troubleshooting
-
-### Common Issues
-
-#### Service Not Found
-**Problem**: `Service 'XYZ' not found`
-**Solution**: 
-1. Check available services using GET `/api/aisensy/services`
-2. Ensure service name matches exactly (case-insensitive)
-3. Verify service is active in admin panel
-
-#### Partner Not Found
-**Problem**: `Partner with phone number not found`
-**Solution**:
-1. Verify partner is registered in the system
-2. Check partner KYC approval status
-3. Ensure phone number format is correct
-
-#### Invalid Date/Time
-**Problem**: `Invalid time format` or `Scheduled date must be in the future`
-**Solution**:
-1. Use YYYY-MM-DD format for dates
-2. Use HH:mm format for times (24-hour)
-3. Ensure date is today or in the future
-
-### Contact Support
-For integration support or technical issues:
-- Email: support@your-domain.com
-- Documentation: https://your-domain.com/api-docs
-- Status Page: https://status.your-domain.com
+### Support Channels
+- Technical Documentation: This document
+- API Testing: Use provided test scripts
+- Error Logs: Check server console for detailed errors
 
 ---
 
-## 📝 Changelog
+## 📝 API Summary
 
-### Version 2.0.0 (Current)
-- **BREAKING**: Updated to use PopularService instead of Service/SubService
-- Added support for service add-ons
-- Improved error messages and validation
-- Enhanced notification system
-- Better partner assignment logic
+| Endpoint | Method | Purpose | Auth Required |
+|----------|--------|---------|---------------|
+| `/services` | GET | List services | No |
+| `/booking/{id}/status` | GET | Get booking status | No |
+| `/customer/create-booking` | POST | Create customer booking | No |
+| `/customer/cancel-booking` | PUT | Cancel booking | No |
+| `/customer/submit-review` | POST | Submit review | No |
+| `/customer/quotation-action` | PUT | Accept/reject quotation | No |
+| `/partner/create-booking` | POST | Create partner booking | No |
+| `/partner/accept-booking` | PUT | Accept booking | No |
+| `/partner/reject-booking` | PUT | Reject booking | No |
+| `/partner/complete-booking` | PUT | Complete booking | No |
+| `/partner/create-quotation` | POST | Create quotation | No |
 
-### Version 1.0.0
-- Initial release with basic booking functionality
-- Customer and partner booking APIs
-- Status checking endpoint
-- Basic notification system
+**Total: 11 endpoints covering complete booking lifecycle**
 
 ---
 
-*Last updated: January 2024*
+*This API provides comprehensive booking management capabilities for AiSensy chatbot integration, supporting both customer and partner workflows with full lifecycle management.*
