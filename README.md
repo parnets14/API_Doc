@@ -497,6 +497,8 @@ Content-Type: application/json
 
 ---
 
+## �  PAYMENT APIs
+
 ## 📋 11. INITIATE PAYMENT
 
 ### **Endpoint**: `POST /api/aisensy/payu/initiate-payment`
@@ -550,7 +552,263 @@ Content-Type: application/json
 
 ---
 
-## 📋 12. GET BOOKING STATUS
+## 📋 12. PAYMENT SUCCESS CALLBACK
+
+### **Endpoint**: `POST /api/aisensy/payu/payment-success`
+
+### **Description**: PayU automatically calls this endpoint when payment is successful
+
+### **Headers**:
+```
+Content-Type: application/x-www-form-urlencoded
+```
+
+### **Request Body** (PayU sends this data):
+```
+key=81Jp42&txnid=AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000&amount=750.00&productinfo=Service%20Booking%20Payment%20-%20AC%20Repair&firstname=John%20Doe&email=john@example.com&phone=+919876543210&mihpayid=403993715527806454&status=success&hash=generated_response_hash&field1=&field2=&field3=&field4=&field5=&field6=&field7=&field8=&field9=&PG_TYPE=CC&bank_ref_num=1708001234567&bankcode=CC&error=E000&cardhash=This_is_the_card_hash_if_payment_is_done_via_CC
+```
+
+### **Response** (Redirects customer):
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Successful</title>
+    <script>
+        window.location.href = "https://nexo.works/payment-result?status=success&bookingId=65f7b3b3b3b3b3b3b3b3b3b3&txnid=AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000&amount=750";
+    </script>
+</head>
+<body>
+    <p>Payment successful! Redirecting...</p>
+</body>
+</html>
+```
+
+---
+
+## 📋 13. PAYMENT FAILURE CALLBACK
+
+### **Endpoint**: `POST /api/aisensy/payu/payment-failure`
+
+### **Description**: PayU automatically calls this endpoint when payment fails
+
+### **Headers**:
+```
+Content-Type: application/x-www-form-urlencoded
+```
+
+### **Request Body** (PayU sends this data):
+```
+key=81Jp42&txnid=AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000&amount=750.00&productinfo=Service%20Booking%20Payment%20-%20AC%20Repair&firstname=John%20Doe&email=john@example.com&phone=+919876543210&mihpayid=&status=failure&hash=generated_response_hash&field1=&field2=&field3=&field4=&field5=&field6=&field7=&field8=&field9=&PG_TYPE=&bank_ref_num=&bankcode=&error=E002&error_Message=Transaction%20cancelled%20by%20user
+```
+
+### **Response** (Redirects customer):
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Failed</title>
+    <script>
+        window.location.href = "https://nexo.works/payment-result?status=failed&bookingId=65f7b3b3b3b3b3b3b3b3b3b3&txnid=AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000&reason=Transaction%20cancelled%20by%20user";
+    </script>
+</head>
+<body>
+    <p>Payment failed! Redirecting...</p>
+</body>
+</html>
+```
+
+---
+
+## 📋 14. CHECK PAYMENT STATUS BY TRANSACTION ID
+
+### **Endpoint**: `GET /api/aisensy/payu/payment-status/{txnid}`
+
+### **Headers**:
+```
+Authorization: Bearer aisensy_nexo_2025_secure_token_v1
+```
+
+### **URL Example**:
+```
+GET /api/aisensy/payu/payment-status/AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000
+```
+
+### **Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "bookingId": "65f7b3b3b3b3b3b3b3b3b3b3",
+    "txnid": "AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000",
+    "paymentStatus": "completed",
+    "paymentMode": "online",
+    "amount": 750,
+    "customerName": "John Doe",
+    "customerPhone": "+919876543210",
+    "serviceName": "AC Repair & Maintenance",
+    "paymentDetails": {
+      "gateway": "payu",
+      "txnid": "AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000",
+      "amount": 750,
+      "initiatedAt": "2024-02-14T10:30:00.000Z",
+      "completedAt": "2024-02-14T10:35:00.000Z",
+      "initiatedVia": "aisensy",
+      "mihpayid": "403993715527806454",
+      "bankRefNum": "1708001234567"
+    }
+  }
+}
+```
+
+---
+
+## 📋 15. CHECK PAYMENT STATUS BY BOOKING ID
+
+### **Endpoint**: `GET /api/aisensy/payu/booking-payment-status/{bookingId}`
+
+### **Headers**:
+```
+Authorization: Bearer aisensy_nexo_2025_secure_token_v1
+```
+
+### **URL Example**:
+```
+GET /api/aisensy/payu/booking-payment-status/65f7b3b3b3b3b3b3b3b3b3b3
+```
+
+### **Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "bookingId": "65f7b3b3b3b3b3b3b3b3b3b3",
+    "txnid": "AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000",
+    "paymentStatus": "completed",
+    "paymentMode": "online",
+    "amount": 750,
+    "customerName": "John Doe",
+    "customerPhone": "+919876543210",
+    "serviceName": "AC Repair & Maintenance",
+    "paymentDetails": {
+      "gateway": "payu",
+      "txnid": "AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000",
+      "amount": 750,
+      "initiatedAt": "2024-02-14T10:30:00.000Z",
+      "completedAt": "2024-02-14T10:35:00.000Z",
+      "initiatedVia": "aisensy",
+      "mihpayid": "403993715527806454",
+      "bankRefNum": "1708001234567"
+    }
+  }
+}
+```
+
+---
+
+## 💳 PAYMENT WORKFLOW EXAMPLE
+
+### **Step 1: Initiate Payment**
+```bash
+curl -X POST "https://nexo.works/api/aisensy/payu/initiate-payment" \
+  -H "Authorization: Bearer aisensy_nexo_2025_secure_token_v1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookingId": "65f7b3b3b3b3b3b3b3b3b3b3",
+    "customerPhone": "+919876543210",
+    "customerName": "John Doe",
+    "amount": "750"
+  }'
+```
+
+### **Step 2: Redirect Customer to PayU**
+Use the `paymentUrl` from the response to redirect customer to PayU payment page.
+
+### **Step 3: PayU Processes Payment**
+PayU will automatically call success/failure callback URLs based on payment result.
+
+### **Step 4: Check Payment Status**
+```bash
+curl -X GET "https://nexo.works/api/aisensy/payu/payment-status/AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000" \
+  -H "Authorization: Bearer aisensy_nexo_2025_secure_token_v1"
+```
+
+---
+
+## 💳 PAYMENT ERROR RESPONSES
+
+### **Booking Not Found (404)**:
+```json
+{
+  "success": false,
+  "message": "Booking not found"
+}
+```
+
+### **Payment Already Completed (400)**:
+```json
+{
+  "success": false,
+  "message": "Payment has already been completed for this booking"
+}
+```
+
+### **Invalid Amount (400)**:
+```json
+{
+  "success": false,
+  "message": "Invalid amount. Must be a positive number"
+}
+```
+
+### **Customer Phone Mismatch (400)**:
+```json
+{
+  "success": false,
+  "message": "Customer phone number does not match booking"
+}
+```
+
+---
+
+## 💳 PAYMENT STATUS VALUES
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Payment not yet initiated |
+| `initiated` | Payment process started |
+| `completed` | Payment successful |
+| `failed` | Payment failed |
+| `cancelled` | Payment cancelled by user |
+
+---
+
+## 💳 PAYU INTEGRATION DETAILS
+
+### **PayU Configuration**:
+- **Merchant Key**: `81Jp42`
+- **Environment**: Production (`https://secure.payu.in`)
+- **Success URL**: `https://nexo.works/api/aisensy/payu/payment-success`
+- **Failure URL**: `https://nexo.works/api/aisensy/payu/payment-failure`
+
+### **Transaction ID Format**:
+```
+AISENSY_{bookingId}_{timestamp}
+```
+
+### **Hash Generation**:
+PayU uses SHA512 hash for security. The system automatically generates and verifies hashes.
+
+### **Supported Payment Methods**:
+- Credit Cards
+- Debit Cards
+- Net Banking
+- UPI
+- Wallets
+
+---
+
+## 📋 16. GET BOOKING STATUS
 
 ### **Endpoint**: `GET /api/aisensy/booking/{bookingId}/status`
 
@@ -594,7 +852,7 @@ GET /api/aisensy/booking/65f7b3b3b3b3b3b3b3b3b3b3/status
 
 ---
 
-## 📋 13. GET AVAILABLE SERVICES
+## 📋 17. GET AVAILABLE SERVICES
 
 ### **Endpoint**: `GET /api/aisensy/services`
 
@@ -683,6 +941,25 @@ curl -X GET "https://nexo.works/api/aisensy/partner/bookings/+919876543211" \
   -H "Authorization: Bearer aisensy_nexo_2025_secure_token_v1"
 ```
 
+### Initiate Payment:
+```bash
+curl -X POST "https://nexo.works/api/aisensy/payu/initiate-payment" \
+  -H "Authorization: Bearer aisensy_nexo_2025_secure_token_v1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookingId": "65f7b3b3b3b3b3b3b3b3b3b3",
+    "customerPhone": "+919876543210",
+    "customerName": "John Doe",
+    "amount": "750"
+  }'
+```
+
+### Check Payment Status:
+```bash
+curl -X GET "https://nexo.works/api/aisensy/payu/payment-status/AISENSY_65f7b3b3b3b3b3b3b3b3b3b3_1708000000000" \
+  -H "Authorization: Bearer aisensy_nexo_2025_secure_token_v1"
+```
+
 ---
 
 ## 🔑 Key Points
@@ -696,11 +973,11 @@ curl -X GET "https://nexo.works/api/aisensy/partner/bookings/+919876543211" \
 
 ---
 
-## 📊 Total Endpoints: 19
+## 📊 Total Endpoints: 17
 
 - **Customer Actions**: 8 endpoints
 - **Partner Actions**: 6 endpoints  
+- **Payment Integration**: 5 endpoints
 - **General/Information**: 3 endpoints
-- **Payment Integration**: 4 endpoints
 
 All endpoints are secured with static token authentication! 🔐
